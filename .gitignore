@@ -41,3 +41,10 @@ docker-compose.override.yml
 docker-compose.yaml
 docker-compose.prod.yaml
 Dockerfile
+
+# Kubernetes
+*.kube
+*.k8s
+*.yaml
+*.yml
+

@@ -1,0 +1,12 @@
+# Ignore files and directories
+node_modules
+.env
+.env.dev
+.env.prod
+.env.test
+__tests__
+coverage
+dist
+docs
+scripts
+tmp

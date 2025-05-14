@@ -2,22 +2,21 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/cmerin0/tasky/internal/db"
 	"github.com/cmerin0/tasky/internal/handlers"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: Could not load .env file")
+	// Load .env only in development
+	if os.Getenv("GO_ENV") != "prod" {
+		_ = godotenv.Load()
 	}
 
 	// Constructing the MongoDB URI
@@ -32,7 +31,7 @@ func main() {
 	// Connect to the database
 	// Note: The ConnectDB function should be called only once
 	// to avoid multiple connections to the database.
-	log.Println("Connecting to MongoDB...")
+	log.Info("Connecting to MongoDB...")
 	db.ConnectDB(mongoURI)
 
 	// Then create the app
@@ -43,8 +42,8 @@ func main() {
 	setupRoutes(app)
 
 	// Start the server
-	fmt.Println("Starting server on port", os.Getenv("APP_PORT"))
-	log.Fatal(app.Listen(":" + os.Getenv("APP_PORT")))
+	log.Info("Starting server on port ", os.Getenv("APP_PORT"))
+	log.Info(app.Listen(":" + os.Getenv("APP_PORT")))
 }
 
 func setupRoutes(app *fiber.App) {

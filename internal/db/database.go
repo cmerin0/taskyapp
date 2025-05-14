@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -46,12 +45,6 @@ func ConnectDB(uri string) {
 }
 
 func GetCollection(name string) *mongo.Collection {
-	// Load environment variables from .env file
-	// This is useful for loading the database name
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: Could not load .env file")
-	}
 	dbname := os.Getenv("MONGO_DBNAME")
 	if !isConnected {
 		log.Fatal("MongoDB client not initialized. Call ConnectDB() first")
