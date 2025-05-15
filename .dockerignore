@@ -10,3 +10,8 @@ dist
 docs
 scripts
 tmp
+kubernetes
+*.yaml
+*.yml
+*.json
+*.log

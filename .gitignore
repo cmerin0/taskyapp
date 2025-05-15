@@ -43,6 +43,4 @@ docker-compose.prod.yaml
 # Kubernetes
 *.kube
 *.k8s
-*.yaml
-*.yml
 

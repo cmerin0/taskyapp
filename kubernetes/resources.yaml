@@ -1,0 +1,41 @@
+# Taking into account that minikube was initialized with 
+# CPUs = 4, Memory = 4Gi and Disk = 50Gi
+
+# Creating resource quotas for namespace tasky-dev
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: tasky-dev-quota
+  namespace: tasky-dev
+spec:
+  hard:
+    limits.cpu: "4"             # Total CPU limits across all pods/containers
+    limits.memory: 4Gi          # Total Memory limits across all pods/containers
+    requests.cpu: "2"           # Total CPU requests across all pods/containers
+    requests.memory: 2Gi        # Total Memory requests across all pods/containers
+    pods: "25"                  # Maximum number of pods
+    persistentvolumeclaims: "5" # Maximum number of PVCs
+    requests.storage: 25Gi      # Total storage requested by PVCs
+---
+
+# Creating a limit range for namespace tasky-dev
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: tasky-dev-limits
+  namespace: tasky-dev
+spec:
+  limits:
+  - type: Container             # Apply limits/defaults to individual containers
+    default:                    # Default limits if not specified
+      cpu: 500m                 
+      memory: 512Mi             
+    defaultRequest:             # Default requests if not specified
+      cpu: 250m                 
+      memory: 256Mi             
+    max:                        # Maximum allowed limits
+      cpu: "1"
+      memory: 1Gi
+    min:                        # Minimum required requests
+      cpu: 100m
+      memory: 100Mi
