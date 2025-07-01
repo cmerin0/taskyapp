@@ -1,12 +1,12 @@
 # Taking into account that minikube was initialized with 
 # CPUs = 4, Memory = 4Gi and Disk = 50Gi
 
-# Creating resource quotas for namespace tasky-dev
+# Creating resource quotas for namespace dev
 apiVersion: v1
 kind: ResourceQuota
 metadata:
-  name: tasky-dev-quota
-  namespace: tasky-dev
+  name: dev-quota
+  namespace: dev
 spec:
   hard:
     limits.cpu: "4"             # Total CPU limits across all pods/containers
@@ -18,12 +18,12 @@ spec:
     requests.storage: 25Gi      # Total storage requested by PVCs
 ---
 
-# Creating a limit range for namespace tasky-dev
+# Creating a limit range for namespace dev
 apiVersion: v1
 kind: LimitRange
 metadata:
-  name: tasky-dev-limits
-  namespace: tasky-dev
+  name: dev-limits
+  namespace: dev
 spec:
   limits:
   - type: Container             # Apply limits/defaults to individual containers

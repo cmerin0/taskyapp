@@ -1,0 +1,17 @@
+# Creation of a storage class for dynamically provisioning persistent volumes
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: mongodb-storage
+  labels:
+    app: tasky
+    version: v1.0.0
+    environment: development
+    tier: database
+    purpose: storage
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"      # Not the default storage class
+provisioner: k8s.io/minikube-hostpath                         # Use the hostPath provisioner for local storage
+volumeBindingMode: Immediate                                  # Bind immediately  
+reclaimPolicy: Delete                                         # Delete the volume when the PVC is deleted  
+---

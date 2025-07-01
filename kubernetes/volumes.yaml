@@ -1,67 +1,22 @@
-# Creation of StorageClass
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: local-storage
-  labels:
-    app: tasky
-    version: v1.0.0
-    environment: development
-    tier: backend
-    purpose: storage
-provisioner: kubernetes.io/no-provisioner # indicates manual provisioning
-volumeBindingMode: WaitForFirstConsumer # indicates that the volume will not be bound until a Pod is created that uses it
-reclaimPolicy: Retain # Retain the volume after the claim is deleted
----
-
-# Creation of persistent volumes and persistent volume claims
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mongodb-pv
-  labels:
-    app: tasky
-    version: v1.0.0
-    environment: development
-    tier: backend
-    purpose: storage
+  name: backup-pv
 spec:
-  storageClassName: local-storage
-  volumeMode: Filesystem
   capacity:
-    storage: 2Gi
+    storage: 5Gi
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain # Retain the volume after the claim is deleted
-  local:
-    path: /mnt/disks/mongodb-data # local path on the host machine minikube
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-                - minikube
+  hostPath:
+    path: /mnt/backup
 ---
-
-# Creation of persistent volume claims
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongodb-pvc
-  namespace: tasky-dev
-  labels:
-    app: tasky
-    version: v1.0.0
-    environment: development
-    tier: backend
-    purpose: storage
+  name: backup-pvc
 spec:
-  volumeName: mongodb-pv # name of the persistent volume to bind to
-  storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 5Gi

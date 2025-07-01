@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: tasky-dev
+  name: dev
   labels:
     app: tasky
     version: v1.0.0

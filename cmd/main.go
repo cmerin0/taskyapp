@@ -57,9 +57,9 @@ func setupRoutes(app *fiber.App) {
 	api := app.Group("/api/v1")
 
 	// Health check routes
-	api.Get("/health", handlers.Healthcheck)
-	api.Get("/readyz", handlers.ReadinessProbe)
-	api.Get("/healthz", handlers.LivenessProbe)
+	app.Get("/health", handlers.Healthcheck)
+	app.Get("/readyz", handlers.ReadinessProbe)
+	app.Get("/healthz", handlers.LivenessProbe)
 
 	// User routes
 	users := api.Group("/users")

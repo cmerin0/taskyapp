@@ -34,11 +34,7 @@ ENV GO_ENV=prod
 # Copying the built executable from the builder stage
 COPY --from=builder /app/main .
 
-# Using fixed UID/GID that matches Kubernetes (or other orchestrators) security context
-RUN addgroup -g 2000 appgroup && \
-    adduser -D -u 1000 -G appgroup appuser && \
-    chown -R appuser:appgroup /app
-USER appuser
+WORKDIR /app
 
 # Command to run the executable in this case the main binary
 CMD ["./main"]

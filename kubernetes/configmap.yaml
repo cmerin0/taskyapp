@@ -2,15 +2,22 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: tasky-configmap
-  namespace: tasky-dev
+  namespace: dev
   labels:
     app: tasky
     version: v1.0.0
     environment: development
     tier: backend
-spec:
-  data:
-    mongo_port: "27017"
-    mongo_host: "mongo-service" # change to your mongo service name
-    app_port: "8080"
-    go_env: "testing"
+    purpose: config
+data:
+  mongo_port: "27017"
+  mongo_host: mongodb-svc     # change to your mongo service name
+  app_port: "3030"
+  go_env: "prod"
+  mongodb.conf: |
+    storage:
+      dbPath: /data/db
+    replication:
+        replSetName: "rs0"
+  # dbPath: /data/db must be the same as the volume mount path in the statefulset
+  # replication: replSetName: "rs0" must be the same as the replSetName in the statefulset

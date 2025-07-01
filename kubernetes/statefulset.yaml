@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: dev
+  labels:
+    app: tasky
+    version: v1.0.0
+    environment: development
+    tier: database
+    purpose: storage
+spec:
+  selector:
+    matchLabels:
+      app: tasky
+      tier: database
+      management: mongodb
+  serviceName: "mongodb-svc"            # Name of the headless service created below
+  replicas: 1
+  template:                             # Template for the pods  
+    metadata:
+      labels:
+        app: tasky
+        tier: database
+        management: mongodb
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:8.0
+          # Status probe to check if the MongoDB server is running
+          startupProbe:
+            exec:
+              command: ["mongosh", "--eval", "db.adminCommand('ping')"]
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 2
+          # Liveness and readiness probes to check if the MongoDB server is healthy
+          livenessProbe:
+            exec:
+              command: ["mongosh", "--eval", "db.adminCommand('ping')"]
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 2
+          # Readiness probe to check if the MongoDB server is ready to accept connections
+          readinessProbe:
+            exec:
+              command: ["mongosh", "--eval", "db.adminCommand('ping')"]
+            initialDelaySeconds: 1
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 2
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: tasky-secret
+                  key: mongo_username
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tasky-secret
+                  key: mongo_password
+            - name: MONGO_INITDB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: mongo_dbname
+                  name: tasky-secret
+          volumeMounts:
+            - name: mongo-pvc
+              mountPath: /data/db
+      # volumes:
+      #   - name: mongo-config
+      #     configMap:
+      #       name: tasky-configmap
+      #       items:
+      #         - key: mongodb.conf
+      #           path: mongodb.conf
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-pvc
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: mongodb-storage
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+# Creating a headless service for MongoDB to enable StatefulSet
+# This service will not have a cluster IP and will allow the StatefulSet to manage its own DNS records
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: dev
+  name: mongodb-svc
+  labels:
+    app: tasky
+    version: v1.0.0
+    environment: development
+    tier: database
+    purpose: storage
+spec:
+  selector:
+    management: mongodb           # Selects the statefulSet pods
+  clusterIP: None                 # Headless service 
+  ports:
+    - name: mongodb               # Name of the port  
+      port: 27017
+      targetPort: 27017
